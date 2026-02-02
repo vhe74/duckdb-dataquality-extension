@@ -18,6 +18,11 @@ set(EXTENSION_SOURCES
     src/dqtest_extension.cpp
     src/dqtest_scalar.cpp
     src/dqtest_openssl_version.cpp
+    src/dq_schema.cpp
+    src/dq_compiler.cpp
+    src/dq_executor.cpp
+    src/dq_functions.cpp
+    src/dq_views.cpp
 )
 
 build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
