@@ -6,35 +6,16 @@
 #include "duckdb/function/scalar_function.hpp"
 #include <duckdb/parser/parsed_data/create_scalar_function_info.hpp>
 
-// OpenSSL linked through vcpkg
-#include <openssl/opensslv.h>
+// Include function headers
+#include "dqtest_scalar.hpp"
+#include "dqtest_openssl_version.hpp"
 
 namespace duckdb {
 
-inline void DqtestScalarFun(DataChunk &args, ExpressionState &state, Vector &result) {
-	auto &name_vector = args.data[0];
-	UnaryExecutor::Execute<string_t, string_t>(name_vector, result, args.size(), [&](string_t name) {
-		return StringVector::AddString(result, "Dqtest " + name.GetString() + " 🐥");
-	});
-}
-
-inline void DqtestOpenSSLVersionScalarFun(DataChunk &args, ExpressionState &state, Vector &result) {
-	auto &name_vector = args.data[0];
-	UnaryExecutor::Execute<string_t, string_t>(name_vector, result, args.size(), [&](string_t name) {
-		return StringVector::AddString(result, "Dqtest " + name.GetString() + ", my linked OpenSSL version is " +
-		                                           OPENSSL_VERSION_TEXT);
-	});
-}
-
 static void LoadInternal(ExtensionLoader &loader) {
-	// Register a scalar function
-	auto dqtest_scalar_function = ScalarFunction("dqtest", {LogicalType::VARCHAR}, LogicalType::VARCHAR, DqtestScalarFun);
-	loader.RegisterFunction(dqtest_scalar_function);
-
-	// Register another scalar function
-	auto dqtest_openssl_version_scalar_function = ScalarFunction("dqtest_openssl_version", {LogicalType::VARCHAR},
-	                                                            LogicalType::VARCHAR, DqtestOpenSSLVersionScalarFun);
-	loader.RegisterFunction(dqtest_openssl_version_scalar_function);
+	// Register scalar functions
+	loader.RegisterFunction(GetDqtestScalarFunction());
+	loader.RegisterFunction(GetDqtestOpenSSLVersionFunction());
 }
 
 void DqtestExtension::Load(ExtensionLoader &loader) {
