@@ -1,10 +1,92 @@
-# DqTest
+# DuckDB Data Quality Extension
 
-This repository is based on https://github.com/duckdb/extension-template, check it out if you want to build and ship your own DuckDB extension.
+A DuckDB extension for defining, running, and tracking data quality tests directly within your database.
+
+## Description
+
+The Data Quality Extension (`dqtest`) enables you to implement comprehensive data quality testing in DuckDB. Define tests using SQL expressions, run them against your data, and track results over time - all without leaving your database environment.
+
+### Key Features
+
+- **SQL-based test definitions**: Write data quality tests using familiar SQL syntax
+- **Flexible test framework**: Define expectations, assertions, and validations on any table or query
+- **Test execution engine**: Run individual tests or entire test suites
+- **Results tracking**: View test results, failure details, and execution history
+- **Built-in reporting**: Access test summaries and identify failing tests through convenient views
+
+### Core Functions
+
+- `dq_init()` - Initialize the data quality testing schema
+- `dq_run_tests()` - Execute all defined data quality tests
+- `dq_run_test(test_name)` - Run a specific test by name
+- `dq_last_run_summary()` - View summary of the most recent test run
+- `dq_failing_tests()` - Query currently failing tests
+- `dq_test_history()` - Access historical test execution data
+
+### Use Cases
+
+- Validate data integrity after ETL pipelines
+- Monitor data quality in production databases
+- Enforce data contracts and expectations
+- Track data quality metrics over time
+- Catch data anomalies and schema changes early
 
 ---
 
-This extension, DqTest, allow you to ... <extension_goal>.
+This repository is based on https://github.com/duckdb/extension-template.
+
+
+## Quick Start Example
+
+```sql
+-- Initialize the data quality testing framework
+CALL dq_init();
+
+-- Create a sample table
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR,
+    email VARCHAR,
+    status VARCHAR,
+    age INTEGER
+);
+
+CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY,
+    customer_id INTEGER,
+    amount DECIMAL(10,2),
+    status VARCHAR
+);
+
+# Insert sample data
+INSERT INTO customers VALUES
+    (1, 'Alice', 'alice@example.com', 'active', 25),
+    (2, 'Bob', NULL, 'active', 30),
+    (3, 'Charlie', 'charlie@example.com', 'inactive', 35);
+
+INSERT INTO orders VALUES
+    (1, 1, 100.00, 'pending'),
+    (2, 1, 200.00, 'shipped'),
+    (3, 2, 150.00, 'delivered'),
+    (4, 99, 50.00, 'pending');
+
+-- Define and run data quality tests
+-- (Test definition syntax depends on your implementation)
+INSERT INTO dq_tests (test_name, table_name, column_name, test_type)
+VALUES ('customers_id_unique', 'customers', 'id', 'unique');
+INSERT INTO dq_tests (test_name, table_name, column_name, test_type)
+  VALUES ('customers_email_not_null', 'customers', 'email', 'not_null');
+-- more examples in test/sql/dq_test.test
+
+
+-- Run all tests
+CALL dq_run_tests();
+
+-- View test results
+SELECT t.test_name, r.status, r.executed_at
+  FROM dq_tests t 
+  LEFT JOIN dq_test_results r ON t.test_id = r.test_id;
+```
 
 
 ## Building
@@ -26,30 +108,20 @@ The main binaries that will be built are:
 ```sh
 ./build/release/duckdb
 ./build/release/test/unittest
-./build/release/extension/dq_test/dq_test.duckdb_extension
+./build/release/extension/dqtest/dqtest.duckdb_extension
 ```
 - `duckdb` is the binary for the duckdb shell with the extension code automatically loaded.
 - `unittest` is the test runner of duckdb. Again, the extension is already linked into the binary.
-- `dq_test.duckdb_extension` is the loadable binary as it would be distributed.
+- `dqtest.duckdb_extension` is the loadable binary as it would be distributed.
 
-## Running the extension
-To run the extension code, simply start the shell with `./build/release/duckdb`.
+## Using the extension
 
-Now we can use the features from the extension directly in DuckDB. The template contains a single scalar function `dq_test()` that takes a string arguments and returns a string:
-```
-D select dq_test('Jane') as result;
-┌───────────────┐
-│    result     │
-│    varchar    │
-├───────────────┤
-│ DqTest Jane 🐥 │
-└───────────────┘
-```
+To use the extension, start the DuckDB shell with `./build/release/duckdb`.
 
 ## Running the tests
 Different tests can be created for DuckDB extensions. The primary way of testing DuckDB extensions should be the SQL tests in `./test/sql`. These SQL tests can be run using:
 ```sh
-make test
+make testdebug
 ```
 
 ### Installing the deployed binaries

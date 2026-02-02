@@ -7,8 +7,6 @@
 #include <duckdb/parser/parsed_data/create_scalar_function_info.hpp>
 
 // Include function headers
-#include "dqtest_scalar.hpp"
-#include "dqtest_openssl_version.hpp"
 #include "dq_schema.hpp"
 #include "dq_functions.hpp"
 #include "dq_views.hpp"
@@ -16,9 +14,6 @@
 namespace duckdb {
 
 static void LoadInternal(ExtensionLoader &loader) {
-	// Register scalar functions
-	loader.RegisterFunction(GetDqtestScalarFunction());
-	loader.RegisterFunction(GetDqtestOpenSSLVersionFunction());
 
 	RegisterDQSchemaFunctions(loader); // dq_init
 	RegisterDQFunctions(loader);       // dq_run_tests + dq_run_test

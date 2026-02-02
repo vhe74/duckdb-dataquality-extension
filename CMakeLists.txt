@@ -16,8 +16,6 @@ include_directories(src/include)
 
 set(EXTENSION_SOURCES
     src/dqtest_extension.cpp
-    src/dqtest_scalar.cpp
-    src/dqtest_openssl_version.cpp
     src/dq_schema.cpp
     src/dq_compiler.cpp
     src/dq_executor.cpp
