@@ -54,7 +54,7 @@ void DQLastRunSummaryFunc(ClientContext &context, TableFunctionInput &data, Data
 }
 
 unique_ptr<FunctionData> DQLastRunSummaryBind(ClientContext &context, TableFunctionBindInput &input,
-                                                vector<LogicalType> &return_types, vector<string> &names) {
+                                              vector<LogicalType> &return_types, vector<string> &names) {
 	names.push_back("test_id");
 	names.push_back("test_name");
 	names.push_back("table_name");
@@ -131,7 +131,7 @@ void DQFailingTestsFunc(ClientContext &context, TableFunctionInput &data, DataCh
 }
 
 unique_ptr<FunctionData> DQFailingTestsBind(ClientContext &context, TableFunctionBindInput &input,
-                                              vector<LogicalType> &return_types, vector<string> &names) {
+                                            vector<LogicalType> &return_types, vector<string> &names) {
 	names.push_back("test_id");
 	names.push_back("test_name");
 	names.push_back("table_name");
@@ -200,7 +200,7 @@ void DQTestHistoryFunc(ClientContext &context, TableFunctionInput &data, DataChu
 }
 
 unique_ptr<FunctionData> DQTestHistoryBind(ClientContext &context, TableFunctionBindInput &input,
-                                             vector<LogicalType> &return_types, vector<string> &names) {
+                                           vector<LogicalType> &return_types, vector<string> &names) {
 	names.push_back("test_id");
 	names.push_back("test_name");
 	names.push_back("table_name");

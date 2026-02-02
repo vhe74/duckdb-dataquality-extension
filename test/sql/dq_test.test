@@ -1,4 +1,4 @@
-# name: test/sql/dqtest.test
+# name: test/sql/dq_test.test
 # description: test dqtest extension
 # group: [sql]
 

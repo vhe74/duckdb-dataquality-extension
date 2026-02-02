@@ -6,7 +6,7 @@
 namespace duckdb {
 
 string DQCompiler::CompileTest(const string &test_type, const string &table_name, const string &column_name,
-                                const string &test_params_json) {
+                               const string &test_params_json) {
 	if (test_type == "unique") {
 		return CompileUnique(table_name, column_name);
 	} else if (test_type == "not_null") {
@@ -38,7 +38,7 @@ string DQCompiler::CompileNotNull(const string &table_name, const string &column
 }
 
 string DQCompiler::CompileAcceptedValues(const string &table_name, const string &column_name,
-                                          const string &test_params_json) {
+                                         const string &test_params_json) {
 	// Parse JSON to extract values array
 	// For now, simple implementation - in production, use proper JSON parsing
 	// Expected format: {"values": ["a", "b", "c"]}
@@ -53,12 +53,11 @@ string DQCompiler::CompileAcceptedValues(const string &table_name, const string 
 
 	string values_list = test_params_json.substr(values_start + 1, values_end - values_start - 1);
 
-	return "SELECT * FROM " + table_name + " WHERE " + column_name + " NOT IN (" + values_list + ") OR " +
-	       column_name + " IS NULL";
+	return "SELECT * FROM " + table_name + " WHERE " + column_name + " NOT IN (" + values_list + ") OR " + column_name +
+	       " IS NULL";
 }
 
-string DQCompiler::CompileRegex(const string &table_name, const string &column_name,
-                                 const string &test_params_json) {
+string DQCompiler::CompileRegex(const string &table_name, const string &column_name, const string &test_params_json) {
 	// Extract pattern from JSON
 	// Expected format: {"pattern": "^[A-Z]{2}[0-9]+$"}
 	auto pattern_start = test_params_json.find("\"pattern\"");
@@ -75,8 +74,7 @@ string DQCompiler::CompileRegex(const string &table_name, const string &column_n
 	return "SELECT * FROM " + table_name + " WHERE NOT regexp_matches(" + column_name + ", '" + pattern + "')";
 }
 
-string DQCompiler::CompileRange(const string &table_name, const string &column_name,
-                                 const string &test_params_json) {
+string DQCompiler::CompileRange(const string &table_name, const string &column_name, const string &test_params_json) {
 	// Extract min and max from JSON
 	// Expected format: {"min": 0, "max": 100}
 
@@ -124,7 +122,7 @@ string DQCompiler::CompileRange(const string &table_name, const string &column_n
 }
 
 string DQCompiler::CompileRelationship(const string &table_name, const string &column_name,
-                                        const string &test_params_json) {
+                                       const string &test_params_json) {
 	// Extract to_table and to_column from JSON
 	// Expected format: {"to_table": "customers", "to_column": "id"}
 
@@ -147,8 +145,9 @@ string DQCompiler::CompileRelationship(const string &table_name, const string &c
 	auto tc_value_end = test_params_json.find("\"", tc_value_start + 1);
 	string to_column = test_params_json.substr(tc_value_start + 1, tc_value_end - tc_value_start - 1);
 
-	return "SELECT t.* FROM " + table_name + " t WHERE t." + column_name + " IS NOT NULL AND NOT EXISTS (SELECT 1 FROM " +
-	       to_table + " r WHERE r." + to_column + " = t." + column_name + ")";
+	return "SELECT t.* FROM " + table_name + " t WHERE t." + column_name +
+	       " IS NOT NULL AND NOT EXISTS (SELECT 1 FROM " + to_table + " r WHERE r." + to_column + " = t." +
+	       column_name + ")";
 }
 
 string DQCompiler::CompileRowCount(const string &table_name, const string &test_params_json) {
@@ -190,7 +189,7 @@ string DQCompiler::CompileRowCount(const string &table_name, const string &test_
 }
 
 string DQCompiler::CompileCustomSQL(const string &table_name, const string &column_name,
-                                     const string &test_params_json) {
+                                    const string &test_params_json) {
 	// Extract SQL from JSON
 	// Expected format: {"sql": "SELECT * FROM {table} WHERE ..."}
 

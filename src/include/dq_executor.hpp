@@ -11,7 +11,7 @@ struct DQTestResult {
 	string table_name;
 	string column_name;
 	string test_type;
-	string status;           // 'pass', 'warn', 'fail'
+	string status; // 'pass', 'warn', 'fail'
 	int64_t rows_failed;
 	int64_t rows_total;
 	string compiled_sql;
@@ -23,9 +23,9 @@ struct DQTestResult {
 class DQExecutor {
 public:
 	static DQTestResult ExecuteTest(ClientContext &context, const string &test_id, const string &test_name,
-	                                 const string &table_name, const string &column_name, const string &test_type,
-	                                 const string &test_params_json, const string &severity, const string &warn_if,
-	                                 const string &error_if);
+	                                const string &table_name, const string &column_name, const string &test_type,
+	                                const string &test_params_json, const string &severity, const string &warn_if,
+	                                const string &error_if);
 
 	static void StoreResult(ClientContext &context, const DQTestResult &result, const string &execution_id);
 

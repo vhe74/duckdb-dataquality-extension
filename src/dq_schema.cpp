@@ -18,14 +18,13 @@ struct DQInitGlobalState : public GlobalTableFunctionState {
 };
 
 unique_ptr<FunctionData> DQInitBind(ClientContext &context, TableFunctionBindInput &input,
-                                     vector<LogicalType> &return_types, vector<string> &names) {
+                                    vector<LogicalType> &return_types, vector<string> &names) {
 	names.push_back("status");
 	return_types.push_back(LogicalType::VARCHAR);
 	return nullptr;
 }
 
-static unique_ptr<GlobalTableFunctionState> DQInitGlobalInit(ClientContext &context,
-                                                               TableFunctionInitInput &input) {
+static unique_ptr<GlobalTableFunctionState> DQInitGlobalInit(ClientContext &context, TableFunctionInitInput &input) {
 	auto state = make_uniq<DQInitGlobalState>();
 
 	try {
@@ -33,7 +32,7 @@ static unique_ptr<GlobalTableFunctionState> DQInitGlobalInit(ClientContext &cont
 		Connection con(context.db->GetDatabase(context));
 
 		vector<string> ddl_statements = {
-			R"(CREATE TABLE IF NOT EXISTS dq_tests (
+		    R"(CREATE TABLE IF NOT EXISTS dq_tests (
 				test_id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::VARCHAR,
 				test_name VARCHAR NOT NULL,
 				table_name VARCHAR NOT NULL,
@@ -49,7 +48,7 @@ static unique_ptr<GlobalTableFunctionState> DQInitGlobalInit(ClientContext &cont
 				created_at TIMESTAMP DEFAULT now(),
 				updated_at TIMESTAMP DEFAULT now()
 			))",
-			R"(CREATE TABLE IF NOT EXISTS dq_test_results (
+		    R"(CREATE TABLE IF NOT EXISTS dq_test_results (
 				result_id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::VARCHAR,
 				test_id VARCHAR NOT NULL,
 				execution_id VARCHAR NOT NULL,
@@ -62,11 +61,10 @@ static unique_ptr<GlobalTableFunctionState> DQInitGlobalInit(ClientContext &cont
 				execution_time_ms INTEGER,
 				executed_at TIMESTAMP DEFAULT now()
 			))",
-			"CREATE INDEX IF NOT EXISTS idx_dq_test_results_test_id ON dq_test_results(test_id)",
-			"CREATE INDEX IF NOT EXISTS idx_dq_test_results_execution_id ON dq_test_results(execution_id)",
-			"CREATE INDEX IF NOT EXISTS idx_dq_tests_table_name ON dq_tests(table_name)",
-			"CREATE INDEX IF NOT EXISTS idx_dq_tests_enabled ON dq_tests(enabled)"
-		};
+		    "CREATE INDEX IF NOT EXISTS idx_dq_test_results_test_id ON dq_test_results(test_id)",
+		    "CREATE INDEX IF NOT EXISTS idx_dq_test_results_execution_id ON dq_test_results(execution_id)",
+		    "CREATE INDEX IF NOT EXISTS idx_dq_tests_table_name ON dq_tests(table_name)",
+		    "CREATE INDEX IF NOT EXISTS idx_dq_tests_enabled ON dq_tests(enabled)"};
 
 		for (auto &sql : ddl_statements) {
 			auto result = con.Query(sql);

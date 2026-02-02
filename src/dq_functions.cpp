@@ -47,7 +47,7 @@ struct RunTestsBindData : public FunctionData {
 };
 
 unique_ptr<FunctionData> RunTestsBind(ClientContext &context, TableFunctionBindInput &input,
-                                       vector<LogicalType> &return_types, vector<string> &names) {
+                                      vector<LogicalType> &return_types, vector<string> &names) {
 	auto bind_data = make_uniq<RunTestsBindData>();
 
 	// Check for named parameters
@@ -91,8 +91,7 @@ unique_ptr<FunctionData> RunTestsBind(ClientContext &context, TableFunctionBindI
 	return bind_data;
 }
 
-static unique_ptr<GlobalTableFunctionState> RunTestsGlobalInit(ClientContext &context,
-                                                                 TableFunctionInitInput &input) {
+static unique_ptr<GlobalTableFunctionState> RunTestsGlobalInit(ClientContext &context, TableFunctionInitInput &input) {
 	auto state = make_uniq<RunTestsGlobalState>();
 	auto &bind_data = input.bind_data->Cast<RunTestsBindData>();
 
@@ -151,8 +150,8 @@ static unique_ptr<GlobalTableFunctionState> RunTestsGlobalInit(ClientContext &co
 			string error_if = chunk->GetValue(8, i).IsNull() ? "" : chunk->GetValue(8, i).ToString();
 
 			// Execute the test
-			auto test_result = DQExecutor::ExecuteTest(context, test_id, test_name, table_name, column_name,
-			                                            test_type, test_params, severity, warn_if, error_if);
+			auto test_result = DQExecutor::ExecuteTest(context, test_id, test_name, table_name, column_name, test_type,
+			                                           test_params, severity, warn_if, error_if);
 
 			// Store result in database
 			DQExecutor::StoreResult(context, test_result, execution_id);

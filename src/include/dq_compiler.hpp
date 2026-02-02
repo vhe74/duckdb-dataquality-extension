@@ -20,8 +20,7 @@ private:
 	static string CompileRelationship(const string &table_name, const string &column_name,
 	                                  const string &test_params_json);
 	static string CompileRowCount(const string &table_name, const string &test_params_json);
-	static string CompileCustomSQL(const string &table_name, const string &column_name,
-	                               const string &test_params_json);
+	static string CompileCustomSQL(const string &table_name, const string &column_name, const string &test_params_json);
 
 	static string SubstituteVariables(const string &sql, const string &table_name, const string &column_name);
 };

@@ -8,9 +8,9 @@
 namespace duckdb {
 
 DQTestResult DQExecutor::ExecuteTest(ClientContext &context, const string &test_id, const string &test_name,
-                                      const string &table_name, const string &column_name, const string &test_type,
-                                      const string &test_params_json, const string &severity, const string &warn_if,
-                                      const string &error_if) {
+                                     const string &table_name, const string &column_name, const string &test_type,
+                                     const string &test_params_json, const string &severity, const string &warn_if,
+                                     const string &error_if) {
 	DQTestResult result;
 	result.test_id = test_id;
 	result.test_name = test_name;
@@ -73,14 +73,13 @@ DQTestResult DQExecutor::ExecuteTest(ClientContext &context, const string &test_
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
-	result.execution_time_ms =
-	    std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	result.execution_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
 	return result;
 }
 
 string DQExecutor::DetermineStatus(int64_t rows_failed, int64_t rows_total, const string &severity,
-                                    const string &warn_if, const string &error_if) {
+                                   const string &warn_if, const string &error_if) {
 	if (rows_failed == 0) {
 		return "pass";
 	}

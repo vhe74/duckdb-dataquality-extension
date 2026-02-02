@@ -20,9 +20,9 @@ static void LoadInternal(ExtensionLoader &loader) {
 	loader.RegisterFunction(GetDqtestScalarFunction());
 	loader.RegisterFunction(GetDqtestOpenSSLVersionFunction());
 
-	RegisterDQSchemaFunctions(loader); //dq_init
-	RegisterDQFunctions(loader); // dq_run_tests + dq_run_test
-	RegisterDQViews(loader); // dq_last_run_summary + dq_failing_tests + dq_test_history
+	RegisterDQSchemaFunctions(loader); // dq_init
+	RegisterDQFunctions(loader);       // dq_run_tests + dq_run_test
+	RegisterDQViews(loader);           // dq_last_run_summary + dq_failing_tests + dq_test_history
 }
 
 void DqtestExtension::Load(ExtensionLoader &loader) {
