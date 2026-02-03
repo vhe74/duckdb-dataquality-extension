@@ -53,6 +53,13 @@ string DQCompiler::CompileAcceptedValues(const string &table_name, const string 
 
 	string values_list = test_params_json.substr(values_start + 1, values_end - values_start - 1);
 
+	// Replace double quotes with single quotes for SQL compatibility
+	size_t pos = 0;
+	while ((pos = values_list.find("\"", pos)) != string::npos) {
+		values_list.replace(pos, 1, "'");
+		pos += 1;
+	}
+
 	return "SELECT * FROM " + table_name + " WHERE " + column_name + " NOT IN (" + values_list + ") OR " + column_name +
 	       " IS NULL";
 }
@@ -118,7 +125,7 @@ string DQCompiler::CompileRange(const string &table_name, const string &column_n
 	}
 	conditions += column_name + " IS NULL";
 
-	return "SELECT * FROM " + table_name + " WHERE " + conditions;
+	return "SELECT * FROM " + table_name + " WHERE " + conditions ;
 }
 
 string DQCompiler::CompileRelationship(const string &table_name, const string &column_name,
@@ -185,7 +192,7 @@ string DQCompiler::CompileRowCount(const string &table_name, const string &test_
 		conditions += "COUNT(*) > " + max_val;
 	}
 
-	return "SELECT CASE WHEN " + conditions + " THEN 1 ELSE 0 END AS fails FROM " + table_name;
+	return "SELECT * FROM (SELECT CASE WHEN " + conditions + " THEN 1 ELSE 0 END AS fails FROM " + table_name + ") WHERE fails = 1";
 }
 
 string DQCompiler::CompileCustomSQL(const string &table_name, const string &column_name,

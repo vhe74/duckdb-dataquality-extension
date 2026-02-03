@@ -102,13 +102,19 @@ static unique_ptr<GlobalTableFunctionState> RunTestsGlobalInit(ClientContext &co
 	               "error_if FROM dq_tests WHERE enabled = true";
 
 	if (!bind_data.test_id_filter.empty()) {
+		//printf("Filtering by test_id: %s\n", bind_data.test_id_filter.c_str());
 		query += " AND test_id = '" + bind_data.test_id_filter + "'";
+		//printf("Final query: %s\n", query.c_str());
 	} else {
 		if (!bind_data.table_name_filter.empty()) {
+			//printf("Filtering by table_name: %s\n", bind_data.table_name_filter.c_str());
 			query += " AND table_name = '" + bind_data.table_name_filter + "'";
+			//printf("Final query: %s\n", query.c_str());
 		}
 		if (!bind_data.tag_filter.empty()) {
+			//printf("Filtering by tag: %s\n", bind_data.tag_filter.c_str());
 			query += " AND '" + bind_data.tag_filter + "' = ANY(tags)";
+			//printf("Final query: %s\n", query.c_str());
 		}
 	}
 
@@ -207,10 +213,6 @@ void RegisterDQFunctions(ExtensionLoader &loader) {
 
 	loader.RegisterFunction(run_tests_func);
 
-	// Register run_test as an alias with test_id parameter
-	TableFunction run_test_func("dq_run_test", {}, RunTestsFunc, RunTestsBind, RunTestsGlobalInit);
-	run_test_func.named_parameters["test_id"] = LogicalType::VARCHAR;
-	loader.RegisterFunction(run_test_func);
 }
 
 } // namespace duckdb

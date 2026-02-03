@@ -18,10 +18,8 @@ The Data Quality Extension (`dqtest`) enables you to implement comprehensive dat
 
 - `dq_init()` - Initialize the data quality testing schema
 - `dq_run_tests()` - Execute all defined data quality tests
-- `dq_run_test(test_name)` - Run a specific test by name
-- `dq_last_run_summary()` - View summary of the most recent test run
-- `dq_failing_tests()` - Query currently failing tests
-- `dq_test_history()` - Access historical test execution data
+- `dq_run_tests(test_id)` - Run a specific test by id
+- `dq_run_tests(table_name)` - Run a specific test for a specific table
 
 ### Use Cases
 
@@ -58,7 +56,7 @@ CREATE TABLE orders (
     status VARCHAR
 );
 
-# Insert sample data
+-- Insert sample data
 INSERT INTO customers VALUES
     (1, 'Alice', 'alice@example.com', 'active', 25),
     (2, 'Bob', NULL, 'active', 30),
@@ -71,13 +69,37 @@ INSERT INTO orders VALUES
     (4, 99, 50.00, 'pending');
 
 -- Define and run data quality tests
+-- To pass a test should not return any lines
 -- (Test definition syntax depends on your implementation)
 INSERT INTO dq_tests (test_name, table_name, column_name, test_type)
 VALUES ('customers_id_unique', 'customers', 'id', 'unique');
+
 INSERT INTO dq_tests (test_name, table_name, column_name, test_type)
   VALUES ('customers_email_not_null', 'customers', 'email', 'not_null');
--- more examples in test/sql/dq_test.test
 
+INSERT INTO dq_tests (test_name, table_name, column_name, test_type, test_params)
+VALUES ('customers_status_valid', 'customers', 'status', 'accepted_values',
+        '{"values": ["active", "inactive", "suspended"]}');
+
+INSERT INTO dq_tests (test_name, table_name, column_name, test_type, test_params)
+VALUES ('customers_email_format', 'customers', 'email', 'regex',
+        '{"pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$"}');
+
+INSERT INTO dq_tests (test_name, table_name, column_name, test_type, test_params)
+VALUES ('customers_age_range', 'customers', 'age', 'range',
+        '{"min": 18, "max": 100}');
+
+INSERT INTO dq_tests (test_name, table_name, column_name, test_type, test_params)
+VALUES ('orders_customer_fk', 'orders', 'customer_id', 'relationship',
+        '{"to_table": "customers", "to_column": "id"}');
+
+INSERT INTO dq_tests (test_name, table_name, test_type, test_params)
+VALUES ('customers_min_rows', 'customers', 'row_count',
+        '{"min": 1, "max": 1000}');
+
+INSERT INTO dq_tests (test_name, table_name, test_type, test_params)
+VALUES ('orders_orphan_check', 'orders', 'custom_sql',
+        '{"sql": "SELECT * FROM {table} WHERE customer_id NOT IN (SELECT id FROM customers)"}');
 
 -- Run all tests
 CALL dq_run_tests();
@@ -86,6 +108,17 @@ CALL dq_run_tests();
 SELECT t.test_name, r.status, r.executed_at
   FROM dq_tests t 
   LEFT JOIN dq_test_results r ON t.test_id = r.test_id;
+
+-- View test results of the last execution 
+SELECT t.test_name, r.status, r.executed_at
+  FROM dq_tests t 
+  LEFT JOIN dq_test_results r ON t.test_id = r.test_id
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY t.test_name ORDER BY r.executed_at DESC NULLS LAST) = 1;
+
+-- view all compiled sql of the last execution 
+SELECT t.test_name, r.status, r.compiled_sql  FROM dq_tests t 
+  LEFT JOIN dq_test_results r ON t.test_id = r.test_id
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY t.test_name ORDER BY r.executed_at DESC NULLS LAST) = 1;
 ```
 
 

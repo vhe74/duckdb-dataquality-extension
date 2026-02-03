@@ -20,7 +20,6 @@ set(EXTENSION_SOURCES
     src/dq_compiler.cpp
     src/dq_executor.cpp
     src/dq_functions.cpp
-    src/dq_views.cpp
 )
 
 build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
