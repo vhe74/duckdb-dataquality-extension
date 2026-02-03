@@ -27,7 +27,7 @@ DQTestResult DQExecutor::ExecuteTest(ClientContext &context, const string &test_
 		// Compile the test to SQL
 		result.compiled_sql = DQCompiler::CompileTest(test_type, table_name, column_name, test_params_json);
 
-		//printf("Compiled SQL for test '%s': %s\n", test_name.c_str(), result.compiled_sql.c_str());
+		// printf("Compiled SQL for test '%s': %s\n", test_name.c_str(), result.compiled_sql.c_str());
 
 		// Execute the query
 		Connection con(context.db->GetDatabase(context));
@@ -191,7 +191,7 @@ void DQExecutor::StoreResult(ClientContext &context, const DQTestResult &result,
 	}
 
 	insert_sql += std::to_string(result.execution_time_ms) + ")";
-	//printf("Storing result for test '%s': %s\n", result.test_name.c_str(), insert_sql.c_str());
+	// printf("Storing result for test '%s': %s\n", result.test_name.c_str(), insert_sql.c_str());
 
 	con.Query(insert_sql);
 }

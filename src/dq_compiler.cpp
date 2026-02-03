@@ -125,7 +125,7 @@ string DQCompiler::CompileRange(const string &table_name, const string &column_n
 	}
 	conditions += column_name + " IS NULL";
 
-	return "SELECT * FROM " + table_name + " WHERE " + conditions ;
+	return "SELECT * FROM " + table_name + " WHERE " + conditions;
 }
 
 string DQCompiler::CompileRelationship(const string &table_name, const string &column_name,
@@ -192,7 +192,8 @@ string DQCompiler::CompileRowCount(const string &table_name, const string &test_
 		conditions += "COUNT(*) > " + max_val;
 	}
 
-	return "SELECT * FROM (SELECT CASE WHEN " + conditions + " THEN 1 ELSE 0 END AS fails FROM " + table_name + ") WHERE fails = 1";
+	return "SELECT * FROM (SELECT CASE WHEN " + conditions + " THEN 1 ELSE 0 END AS fails FROM " + table_name +
+	       ") WHERE fails = 1";
 }
 
 string DQCompiler::CompileCustomSQL(const string &table_name, const string &column_name,
