@@ -183,7 +183,7 @@ void DQExecutor::StoreResult(ClientContext &context, const DQTestResult &result,
 		// Escape single quotes in error message
 		string escaped_error = result.error_message;
 		size_t pos = 0;
-		while ((pos = escaped_error.find("'", pos)) != string::npos) {
+		while ((pos = escaped_error.find('\'', pos)) != string::npos) {
 			escaped_error.replace(pos, 1, "''");
 			pos += 2;
 		}

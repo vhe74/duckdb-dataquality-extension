@@ -12,7 +12,6 @@
 namespace duckdb {
 
 static void LoadInternal(ExtensionLoader &loader) {
-
 	RegisterDQSchemaFunctions(loader); // dq_init
 	RegisterDQFunctions(loader);       // dq_run_tests + dq_run_test
 }

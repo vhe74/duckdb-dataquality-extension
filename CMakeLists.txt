@@ -16,16 +16,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(src/include)
 
 set(EXTENSION_SOURCES
-    src/dqtest_extension.cpp
-    src/dq_schema.cpp
-    src/dq_compiler.cpp
-    src/dq_executor.cpp
-    src/dq_functions.cpp
-)
+    src/dqtest_extension.cpp src/dq_schema.cpp src/dq_compiler.cpp
+    src/dq_executor.cpp src/dq_functions.cpp)
 
 build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
 build_loadable_extension(${TARGET_NAME} " " ${EXTENSION_SOURCES})
-
 
 install(
   TARGETS ${EXTENSION_NAME}
