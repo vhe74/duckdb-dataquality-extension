@@ -47,7 +47,7 @@ struct RunTestsBindData : public FunctionData {
 };
 
 unique_ptr<FunctionData> RunTestsBind(ClientContext &context, TableFunctionBindInput &input,
-                                      vector<LogicalType> &return_types, vector<string> &names) {
+                                      vector<LogicalType> &return_types, vector<Identifier> &names) {
 	auto bind_data = make_uniq<RunTestsBindData>();
 
 	// Check for named parameters
@@ -174,7 +174,7 @@ void RunTestsFunc(ClientContext &context, TableFunctionInput &data, DataChunk &o
 	auto &global_state = data.global_state->Cast<RunTestsGlobalState>();
 
 	if (global_state.current_idx >= global_state.results.size()) {
-		output.SetCardinality(0);
+		output.SetChildCardinality(0);
 		return;
 	}
 
@@ -199,17 +199,16 @@ void RunTestsFunc(ClientContext &context, TableFunctionInput &data, DataChunk &o
 		count++;
 	}
 
-	output.SetCardinality(count);
+	output.SetChildCardinality(count);
 }
 
 void RegisterDQFunctions(ExtensionLoader &loader) {
 	// Register run_tests table function
 	TableFunction run_tests_func("dq_run_tests", {}, RunTestsFunc, RunTestsBind, RunTestsGlobalInit);
-
-	// Add named parameters
-	run_tests_func.named_parameters["table_name"] = LogicalType::VARCHAR;
-	run_tests_func.named_parameters["tag"] = LogicalType::VARCHAR;
-	run_tests_func.named_parameters["test_id"] = LogicalType::VARCHAR;
+	run_tests_func.GetSignature()
+	    .AddKeywordOnly("table_name", LogicalType::VARCHAR)
+	    .AddKeywordOnly("tag", LogicalType::VARCHAR)
+	    .AddKeywordOnly("test_id", LogicalType::VARCHAR);
 
 	loader.RegisterFunction(run_tests_func);
 }

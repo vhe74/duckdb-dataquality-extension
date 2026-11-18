@@ -18,7 +18,7 @@ struct DQInitGlobalState : public GlobalTableFunctionState {
 };
 
 unique_ptr<FunctionData> DQInitBind(ClientContext &context, TableFunctionBindInput &input,
-                                    vector<LogicalType> &return_types, vector<string> &names) {
+                                    vector<LogicalType> &return_types, vector<Identifier> &names) {
 	names.push_back("status");
 	return_types.push_back(LogicalType::VARCHAR);
 	return nullptr;
@@ -86,11 +86,11 @@ void DQInitFunc(ClientContext &context, TableFunctionInput &data, DataChunk &out
 	auto &global_state = data.global_state->Cast<DQInitGlobalState>();
 
 	if (global_state.finished) {
-		output.SetCardinality(0);
+		output.SetChildCardinality(0);
 		return;
 	}
 
-	output.SetCardinality(1);
+	output.SetChildCardinality(1);
 	output.data[0].SetValue(0, Value(global_state.status_message));
 	global_state.finished = true;
 }
